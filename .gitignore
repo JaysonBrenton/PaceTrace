@@ -39,3 +39,6 @@ next-env.d.ts
 /web/node_modules
 /web/.next
 /web/storybook-static
+.env
+.env.*
+!.env.example
