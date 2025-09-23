@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_ROOT="/home/jayson/Development/PaceTrace"
+SERVICE="pacetrace.service"
+
+echo "==> cd to repo"
+cd "$APP_ROOT"
+
+echo "==> git pull"
+git pull
+
+# Install deps (root layout). If you later move to web/, this script auto-detects it.
+if [ -f "$APP_ROOT/package.json" ]; then
+  echo "==> npm install (root)"
+  npm install
+elif [ -f "$APP_ROOT/web/package.json" ]; then
+  echo "==> npm install (web/)"
+  npm --prefix "$APP_ROOT/web" install
+else
+  echo "!! No package.json found at root or web/. Aborting."
+  exit 1
+fi
+
+# Migrations (guarded)
+if [ -f "$APP_ROOT/prisma/schema.prisma" ]; then
+  echo "==> prisma migrate deploy"
+  npx prisma migrate deploy --schema "$APP_ROOT/prisma/schema.prisma"
+else
+  echo "==> prisma schema missing; skipping migrate"
+fi
+
+# Restart the user service
+echo "==> restart service: $SERVICE"
+systemctl --user restart "$SERVICE"
+
+# Wait briefly for Next to bind
+echo "==> wait for listener on :3001"
+for i in {1..10}; do
+  ss -ltnp | grep -q ':3001' && break || sleep 1
+done
+ss -ltnp | grep ':3001' || echo "!! no listener on :3001 yet"
+
+# Quick HTTP checks
+echo "==> quick HTTP checks"
+set +e
+curl -fsSI http://127.0.0.1:3001/       | head -n 1
+curl -fsSI http://127.0.0.1:3001/login | head -n 1
+set -e
+
+echo "==> done"
