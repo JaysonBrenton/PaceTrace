@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthConfig } from "next-auth";
+import NextAuth, { type NextAuthOptions, getServerSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 import { getLogger } from "@/lib/logging";
@@ -7,7 +7,7 @@ import { trackAuthEvent } from "@/lib/telemetry";
 const demoEmail = process.env.AUTH_DEMO_EMAIL ?? "driver@pacetrace.app";
 const demoPassword = process.env.AUTH_DEMO_PASSWORD ?? "pitlane";
 
-const config: NextAuthConfig = {
+export const authOptions: NextAuthOptions = {
   providers: [
     Credentials({
       name: "Email",
@@ -114,4 +114,6 @@ const config: NextAuthConfig = {
   },
 };
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+export const auth = () => getServerSession(authOptions);
+
+export const authHandler = NextAuth(authOptions);
