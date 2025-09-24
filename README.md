@@ -13,6 +13,17 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) to explore the marketing shell and navigate to `/login` for the authentication experience.
 
+### Authentication
+
+PaceTrace now ships with demo credentials wired through a NextAuth credentials provider. Sign in at `/login` with:
+
+```
+Email: driver@pacetrace.app
+Password: pitlane
+```
+
+Override the defaults by setting `AUTH_DEMO_EMAIL` and `AUTH_DEMO_PASSWORD` in your environment. Provide a `NEXTAUTH_SECRET` when deploying to production.
+
 ## Available scripts
 
 | Script | Description |
@@ -27,16 +38,16 @@ Then open [http://localhost:3000](http://localhost:3000) to explore the marketin
 ```
 src/
   app/
+    (app)/          # Authenticated routes and layout
+    api/auth/       # NextAuth handler
     layout.tsx      # Global font loading and metadata
+    login/          # Sign-in screen + client form logic
     page.tsx        # Landing page scaffold
-    login/page.tsx  # Sign-in screen
   app/globals.css   # Tailwind + design tokens
 ```
 
 Tailwind is configured with semantic tokens (background, card, accent, etc.) to make it easy to extend the design system as authenticated surfaces come online. The login form includes analytics-friendly attributes so future telemetry hooks can be wired without redesigning the UI.
 
-## Next steps
+## Observability hooks
 
-- Wire the sign-in form to your auth provider (Clerk, NextAuth, etc.).
-- Build the authenticated dashboard routes under `src/app/(app)`.
-- Layer in telemetry + logging plumbing as the backend stabilizes.
+Structured logging and telemetry helpers live in `src/lib/logging.ts` and `src/lib/telemetry.ts`. The authentication flow, protected layouts, and dashboard surfaces publish events so backend services can ingest them as the platform matures.
