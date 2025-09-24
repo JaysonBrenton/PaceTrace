@@ -65,7 +65,7 @@ export function LoginForm() {
       <div className="space-y-3">
         <button
           type="button"
-          className="inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#121212] transition hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="inline-flex w-full items-center justify-center rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition hover:bg-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-foreground)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))]"
           data-analytics-event="auth:provider:google"
           disabled={Boolean(isProviderSubmitting)}
           onClick={() => void handleProviderSignIn("google")}
@@ -74,7 +74,7 @@ export function LoginForm() {
         </button>
         <button
           type="button"
-          className="inline-flex w-full items-center justify-center rounded-full border border-white/40 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="inline-flex w-full items-center justify-center rounded-full border border-border/60 bg-transparent px-6 py-3 text-sm font-semibold text-foreground transition hover:border-border hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-foreground)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))]"
           data-analytics-event="auth:provider:facebook"
           disabled={Boolean(isProviderSubmitting)}
           onClick={() => void handleProviderSignIn("facebook")}
@@ -83,7 +83,7 @@ export function LoginForm() {
         </button>
         <button
           type="button"
-          className="inline-flex w-full items-center justify-center rounded-full border border-white/40 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="inline-flex w-full items-center justify-center rounded-full border border-border/60 bg-transparent px-6 py-3 text-sm font-semibold text-foreground transition hover:border-border hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-foreground)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))]"
           data-analytics-event="auth:provider:apple"
           disabled={Boolean(isProviderSubmitting)}
           onClick={() => void handleProviderSignIn("apple")}
@@ -92,7 +92,7 @@ export function LoginForm() {
         </button>
         <button
           type="button"
-          className="inline-flex w-full items-center justify-center rounded-full border border-white/40 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="inline-flex w-full items-center justify-center rounded-full border border-border/60 bg-transparent px-6 py-3 text-sm font-semibold text-foreground transition hover:border-border hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-foreground)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))]"
           data-analytics-event="auth:provider:phone"
           disabled={Boolean(isProviderSubmitting)}
           onClick={() => void handleProviderSignIn("phone")}
@@ -101,10 +101,10 @@ export function LoginForm() {
         </button>
       </div>
 
-      <div className="flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-white/40">
-        <span className="h-px flex-1 bg-white/20" aria-hidden />
+      <div className="flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-muted-foreground/70">
+        <span className="h-px flex-1 bg-muted/60" aria-hidden />
         Or
-        <span className="h-px flex-1 bg-white/20" aria-hidden />
+        <span className="h-px flex-1 bg-muted/60" aria-hidden />
       </div>
 
       <form className="space-y-6" method="post" data-analytics-event="auth:submit" onSubmit={handleSubmit}>
@@ -143,7 +143,7 @@ export function LoginForm() {
 
         <button
           type="submit"
-          className="inline-flex w-full items-center justify-center rounded-full bg-[hsl(var(--color-accent))] px-6 py-3 text-sm font-semibold text-[#0f0f0f] transition hover:bg-[hsl(var(--color-accent-muted))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex w-full items-center justify-center rounded-full bg-[hsl(var(--color-accent))] px-6 py-3 text-sm font-semibold text-background transition hover:bg-[hsl(var(--color-accent-muted))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-foreground)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-70"
           data-analytics-event="auth:submit:primary"
           disabled={isSubmitting}
         >

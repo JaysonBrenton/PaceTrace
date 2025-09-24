@@ -4,15 +4,16 @@
 
 @layer base {
   :root {
-    --color-bg: 226 36% 9%;
-    --color-fg: 210 40% 98%;
-    --color-muted: 226 32% 17%;
-    --color-muted-foreground: 214 20% 68%;
-    --color-card: 228 44% 14%;
-    --color-card-border: 226 38% 22%;
-    --color-accent: 162 73% 46%;
-    --color-accent-muted: 162 63% 38%;
+    --color-bg: 228 60% 8%;
+    --color-fg: 215 33% 92%;
+    --color-muted: 226 34% 16%;
+    --color-muted-foreground: 217 19% 68%;
+    --color-card: 229 47% 12%;
+    --color-card-border: 227 38% 23%;
+    --color-accent: 267 84% 68%;
+    --color-accent-muted: 268 74% 60%;
     --color-success: 160 84% 39%;
+    --color-destructive: 0 84% 63%;
 
     color-scheme: dark;
   }
@@ -25,8 +26,8 @@
     @apply min-h-screen bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     background-image:
-      radial-gradient(circle at 20% -10%, hsla(var(--color-accent) / 0.18), transparent 55%),
-      radial-gradient(circle at 80% 0%, hsla(var(--color-accent) / 0.1), transparent 50%),
+      radial-gradient(circle at 20% -10%, hsla(var(--color-accent) / 0.22), transparent 55%),
+      radial-gradient(circle at 80% 0%, hsla(var(--color-accent) / 0.14), transparent 50%),
       linear-gradient(180deg, hsla(var(--color-bg) / 1) 0%, hsla(var(--color-bg) / 1) 100%);
   }
 
