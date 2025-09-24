@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
-import { getLogger } from "@/lib/logging";
-import { trackEvent } from "@/lib/telemetry";
+import { PageViewLogger } from "@/components/page-view-logger";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -27,17 +26,16 @@ const mockMetrics = [
 ];
 
 export default function DashboardPage() {
-  getLogger().info("dashboard.viewed");
-  trackEvent("dashboard.render");
-
   return (
-    <div className="space-y-10">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-semibold">Race control overview</h1>
-        <p className="text-sm text-muted-foreground">
-          Keep tabs on laps, alerts, and coaching notes from practice through mains.
-        </p>
-      </section>
+    <>
+      <PageViewLogger event="dashboard.render" message="dashboard.viewed" />
+      <div className="space-y-10">
+        <section className="space-y-2">
+          <h1 className="text-3xl font-semibold">Race control overview</h1>
+          <p className="text-sm text-muted-foreground">
+            Keep tabs on laps, alerts, and coaching notes from practice through mains.
+          </p>
+        </section>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {mockMetrics.map((metric) => (
@@ -84,6 +82,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }
