@@ -10,47 +10,28 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative isolate flex min-h-screen items-center justify-center px-4 py-16 sm:px-6">
+    <div className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-[#121212] px-4 py-16 text-white sm:px-6">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,hsla(var(--color-accent)/0.35),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,hsla(var(--color-accent)/0.35),transparent_65%)]"
       />
-      <div className="w-full max-w-md space-y-10">
-        <div className="space-y-3 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-            PaceTrace
-          </p>
-          <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">Welcome back</h1>
-          <p className="text-sm text-muted-foreground">
-            Sign in to review lap deltas, annotate heats, and keep your team aligned on race-day decisions.
-          </p>
-        </div>
+      <div className="absolute inset-x-0 top-0 -z-10 h-1/2 bg-[radial-gradient(circle_at_top,hsl(var(--color-accent)/0.2),transparent_70%)]" aria-hidden />
+      <div className="relative w-full max-w-lg">
+        <div className="space-y-8 rounded-[32px] bg-white/5 p-10 text-white shadow-[0_30px_80px_-40px_rgba(0,0,0,0.8)] ring-1 ring-white/10 backdrop-blur-xl">
+          <div className="space-y-4 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/70">PaceTrace</p>
+            <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">Log in to keep the pace</h1>
+            <p className="text-sm text-white/70">
+              Pick the quickest route back into telemetry insights and team coordination.
+            </p>
+          </div>
 
-        <div className="rounded-3xl border border-border/60 bg-card/80 p-8 shadow-card backdrop-blur-xl">
           <LoginForm />
         </div>
 
-        <div className="mt-8 space-y-3 text-left text-xs text-muted-foreground">
-          <p className="font-semibold uppercase tracking-[0.3em] text-muted-foreground/70">What you get</p>
-          <ul className="space-y-2">
-            <li className="flex items-start gap-2">
-              <span className="mt-1 size-1.5 rounded-full bg-success" aria-hidden />
-              Live lap comparisons across heats and mains
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-1 size-1.5 rounded-full bg-success" aria-hidden />
-              Telemetry callouts delivered to pit tablets
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-1 size-1.5 rounded-full bg-success" aria-hidden />
-              Secure multi-tenant workspace for your crew
-            </li>
-          </ul>
-        </div>
-
-        <p className="text-center text-xs text-muted-foreground">
-          New to PaceTrace?{" "}
-          <Link className="font-medium text-foreground hover:text-accent" href="#">
+        <p className="mt-8 text-center text-xs text-white/60">
+          Need an invite?{" "}
+          <Link className="font-medium text-white transition hover:text-[hsl(var(--color-accent))]" href="#">
             Request early access
           </Link>
         </p>
