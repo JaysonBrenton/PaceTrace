@@ -10,32 +10,57 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-16 text-foreground sm:px-6">
+    <div className="relative flex min-h-screen flex-col bg-background text-foreground">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,hsla(var(--color-accent)/0.35),transparent_65%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsla(var(--color-accent)/0.2),transparent_60%)]"
       />
-      <div className="absolute inset-x-0 top-0 -z-10 h-1/2 bg-[radial-gradient(circle_at_top,hsl(var(--color-accent)/0.2),transparent_70%)]" aria-hidden />
-      <div className="relative w-full max-w-lg">
-        <div className="space-y-8 rounded-[32px] bg-[hsla(var(--color-card)/0.88)] p-10 text-foreground shadow-[0_30px_80px_-40px_hsla(var(--color-accent)/0.6)] ring-1 ring-[hsla(var(--color-card-border)/0.6)] backdrop-blur-xl">
-          <div className="space-y-4 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-foreground/70">PaceTrace</p>
-            <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">Log in to keep the pace</h1>
-            <p className="text-sm text-foreground/70">
-              Pick the quickest route back into telemetry insights and team coordination.
-            </p>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-[-10%] h-[420px] bg-[radial-gradient(circle_at_top_right,hsla(var(--color-accent-2)/0.25),transparent_65%)]"
+      />
+
+      <header className="relative z-10 mx-auto w-full max-w-4xl px-4 pt-12 text-center sm:px-6">
+        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+          PaceTrace — the one-stop lap logic shop.
+        </p>
+      </header>
+
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-16 pt-8 sm:px-6">
+        <section className="w-full max-w-xl">
+          <div className="overflow-hidden rounded-[32px] border border-border/70 bg-card/95 shadow-card backdrop-blur-sm">
+            <div className="space-y-10 p-10 sm:p-12">
+              <div className="space-y-3 text-center">
+                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Sign in</h1>
+                <p className="text-base text-muted-foreground">Access your PaceTrace data.</p>
+              </div>
+
+              <LoginForm />
+            </div>
           </div>
 
-          <LoginForm />
-        </div>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Need an account?{" "}
+            <Link className="font-semibold text-accent transition hover:text-accent-muted" href="/register">
+              Create one
+            </Link>
+          </p>
+        </section>
+      </main>
 
-        <p className="mt-8 text-center text-xs text-foreground/60">
-          Need an invite?{" "}
-          <Link className="font-medium text-foreground transition hover:text-[hsl(var(--color-accent))]" href="#">
-            Request early access
-          </Link>
+      <footer className="relative z-10 border-t border-border/60 bg-card/70 py-8 backdrop-blur-sm">
+        <p className="mx-auto max-w-4xl px-4 text-center text-xs text-muted-foreground sm:px-6">
+          © PaceTrace •{" "}
+          <Link className="font-medium text-accent transition hover:text-accent-muted" href="/legal/privacy">
+            Privacy
+          </Link>{" "}
+          •{" "}
+          <Link className="font-medium text-accent transition hover:text-accent-muted" href="/legal/terms">
+            Terms
+          </Link>{" "}
+          • <span className="font-semibold text-foreground">See the data. Find the pace.</span>
         </p>
-      </div>
+      </footer>
     </div>
   );
 }

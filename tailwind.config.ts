@@ -18,6 +18,7 @@ const config: Config = {
         border: "hsl(var(--color-card-border) / <alpha-value>)",
         accent: "hsl(var(--color-accent) / <alpha-value>)",
         "accent-muted": "hsl(var(--color-accent-muted) / <alpha-value>)",
+        "accent-2": "hsl(var(--color-accent-2) / <alpha-value>)",
         success: "hsl(var(--color-success) / <alpha-value>)",
         destructive: "hsl(var(--color-destructive) / <alpha-value>)",
       },
