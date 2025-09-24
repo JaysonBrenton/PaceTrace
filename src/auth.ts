@@ -117,3 +117,4 @@ export const authOptions: NextAuthOptions = {
 export const auth = () => getServerSession(authOptions);
 
 export const authHandler = NextAuth(authOptions);
+export const handlers = { GET: authHandler, POST: authHandler };
