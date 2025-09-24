@@ -1,0 +1,1 @@
+Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (Desktop)” spec and wire Storybook + Chromatic. Do not paste secrets or credentials. Use small, reviewable diffs and keep code modular. No hardcoded hex colours in components—use CSS variables (design tokens).
