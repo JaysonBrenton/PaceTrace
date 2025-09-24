@@ -19,6 +19,7 @@ const config: Config = {
         accent: "hsl(var(--color-accent) / <alpha-value>)",
         "accent-muted": "hsl(var(--color-accent-muted) / <alpha-value>)",
         success: "hsl(var(--color-success) / <alpha-value>)",
+        destructive: "hsl(var(--color-destructive) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
