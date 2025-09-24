@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
-import { withRequestLogger } from "@/lib/logging";
-import { trackEvent } from "@/lib/telemetry";
+import { PageViewLogger } from "@/components/page-view-logger";
 
 export const metadata: Metadata = {
   title: "Timeline",
@@ -36,33 +35,36 @@ const severityStyles: Record<typeof events[number]["severity"], string> = {
 };
 
 export default function TimelinePage() {
-  const logger = withRequestLogger({ route: "timeline" });
-  logger.info("timeline.viewed");
-  trackEvent("timeline.render");
-
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold">Session timeline</h1>
-        <p className="text-sm text-muted-foreground">
-          Cross-reference telemetry spikes with pit callouts to coach smarter.
-        </p>
-      </header>
-      <ol className="space-y-4">
-        {events.map((event) => (
-          <li key={event.id} className="rounded-2xl border border-border/60 bg-background/80 p-5 shadow-card">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground/80">
-                {event.label}
-              </span>
-              <span className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.28em] ${severityStyles[event.severity]}`}>
-                {event.severity}
-              </span>
-            </div>
-            <p className="mt-3 text-sm text-foreground">{event.message}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
+    <>
+      <PageViewLogger
+        context={{ route: "timeline" }}
+        event="timeline.render"
+        message="timeline.viewed"
+      />
+      <div className="space-y-8">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold">Session timeline</h1>
+          <p className="text-sm text-muted-foreground">
+            Cross-reference telemetry spikes with pit callouts to coach smarter.
+          </p>
+        </header>
+        <ol className="space-y-4">
+          {events.map((event) => (
+            <li key={event.id} className="rounded-2xl border border-border/60 bg-background/80 p-5 shadow-card">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground/80">
+                  {event.label}
+                </span>
+                <span className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.28em] ${severityStyles[event.severity]}`}>
+                  {event.severity}
+                </span>
+              </div>
+              <p className="mt-3 text-sm text-foreground">{event.message}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </>
   );
 }

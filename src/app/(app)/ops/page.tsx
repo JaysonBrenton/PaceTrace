@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
-import { getLogger } from "@/lib/logging";
-import { trackEvent } from "@/lib/telemetry";
+import { PageViewLogger } from "@/components/page-view-logger";
 
 export const metadata: Metadata = {
   title: "Operations",
@@ -33,23 +32,22 @@ const statusStyles: Record<"operational" | "degraded" | "outage", string> = {
 };
 
 export default function OpsPage() {
-  getLogger().info("ops.viewed");
-  trackEvent("ops.render");
-
   return (
-    <div className="space-y-10">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold">Operational readiness</h1>
-        <p className="text-sm text-muted-foreground">
-          Instrumented health checks and structured logs keep the pit wall confident.
-        </p>
-      </header>
-      <div className="grid gap-4 lg:grid-cols-2">
-        {checks.map((check) => (
-          <article
-            key={check.title}
-            className="rounded-2xl border border-border/70 bg-background/80 p-5 shadow-card"
-          >
+    <>
+      <PageViewLogger event="ops.render" message="ops.viewed" />
+      <div className="space-y-10">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold">Operational readiness</h1>
+          <p className="text-sm text-muted-foreground">
+            Instrumented health checks and structured logs keep the pit wall confident.
+          </p>
+        </header>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {checks.map((check) => (
+            <article
+              key={check.title}
+              className="rounded-2xl border border-border/70 bg-background/80 p-5 shadow-card"
+            >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">{check.title}</h2>
               <span
@@ -60,8 +58,9 @@ export default function OpsPage() {
             </div>
             <p className="mt-3 text-sm text-muted-foreground">{check.description}</p>
           </article>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
