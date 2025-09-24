@@ -1,7 +1,4 @@
-import NextAuth, {
-  getServerSession,
-  type NextAuthOptions,
-} from "next-auth";
+import NextAuth, { type NextAuthOptions, getServerSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 import { getLogger } from "@/lib/logging";
@@ -120,5 +117,4 @@ export const authOptions: NextAuthOptions = {
 export const auth = () => getServerSession(authOptions);
 
 export const authHandler = NextAuth(authOptions);
-
 export const handlers = { GET: authHandler, POST: authHandler };
