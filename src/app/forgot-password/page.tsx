@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { AuthCard } from "@/components/auth/auth-card";
 import { AuthFooter } from "@/components/auth/auth-footer";
 import { AuthHeader } from "@/components/auth/auth-header";
 
-import { LoginForm } from "./sign-in-form";
+import { ResetPasswordForm } from "./reset-form";
 
 export const metadata: Metadata = {
-  title: "Sign in",
-  description: "Authenticate to access PaceTrace telemetry and coaching tools.",
+  title: "Reset password",
+  description: "Request a PaceTrace password reset link.",
 };
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground">
       <div
@@ -27,19 +26,8 @@ export default function LoginPage() {
       <AuthHeader className="relative z-10" />
 
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-16 pt-8 sm:px-6">
-        <AuthCard
-          helper="Access your PaceTrace data."
-          title="Sign in"
-          footer={
-            <p>
-              Need an account?{" "}
-              <Link className="font-semibold text-accent transition hover:text-accent-muted" href="/register">
-                Create one
-              </Link>
-            </p>
-          }
-        >
-          <LoginForm />
+        <AuthCard helper="Enter your email and we’ll send a reset link." title="Reset your password">
+          <ResetPasswordForm />
         </AuthCard>
       </main>
 

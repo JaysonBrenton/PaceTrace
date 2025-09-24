@@ -1,0 +1,15 @@
+:root {
+  --color-bg: 213 57% 96%;
+  --color-fg: 214 76% 12%;
+  --color-muted: 213 32% 92%;
+  --color-muted-foreground: 217 22% 46%;
+  --color-card: 0 0% 100%;
+  --color-card-border: 215 33% 86%;
+  --color-accent: 208 84% 40%;
+  --color-accent-muted: 208 80% 48%;
+  --color-accent-2: 164 98% 52%;
+  --color-danger: 4 74% 49%;
+  --color-success: 164 98% 40%;
+
+  color-scheme: light;
+}

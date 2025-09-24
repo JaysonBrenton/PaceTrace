@@ -2,22 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../styles/tokens.css";
+
 @layer base {
-  :root {
-    --color-bg: 228 60% 8%;
-    --color-fg: 215 33% 92%;
-    --color-muted: 226 34% 16%;
-    --color-muted-foreground: 217 19% 68%;
-    --color-card: 229 47% 12%;
-    --color-card-border: 227 38% 23%;
-    --color-accent: 267 84% 68%;
-    --color-accent-muted: 268 74% 60%;
-    --color-success: 160 84% 39%;
-    --color-destructive: 0 84% 63%;
-
-    color-scheme: dark;
-  }
-
   * {
     @apply border-border;
   }
@@ -26,13 +13,13 @@
     @apply min-h-screen bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     background-image:
-      radial-gradient(circle at 20% -10%, hsla(var(--color-accent) / 0.22), transparent 55%),
-      radial-gradient(circle at 80% 0%, hsla(var(--color-accent) / 0.14), transparent 50%),
-      linear-gradient(180deg, hsla(var(--color-bg) / 1) 0%, hsla(var(--color-bg) / 1) 100%);
+      radial-gradient(circle at 12% -10%, hsla(var(--color-accent) / 0.25), transparent 55%),
+      radial-gradient(circle at 88% -20%, hsla(var(--color-accent-2) / 0.22), transparent 60%),
+      linear-gradient(180deg, hsl(var(--color-bg)) 0%, hsl(var(--color-bg)) 100%);
   }
 
   a {
-    @apply text-foreground underline-offset-4 transition-colors hover:text-accent;
+    @apply text-accent underline-offset-4 transition-colors hover:text-accent-muted;
   }
 }
 
