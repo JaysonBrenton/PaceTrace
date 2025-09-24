@@ -1,0 +1,40 @@
+name: Chromatic Visual Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "web/**"
+      - ".github/workflows/chromatic.yml"
+
+jobs:
+  chromatic:
+    name: Publish Storybook to Chromatic
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        working-directory: web
+        run: npm install
+      - name: Build Storybook
+        working-directory: web
+        run: npm run build-storybook
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          workingDir: web
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          autoAcceptChanges: false
+          exitZeroOnChanges: false
+          onlyChanged: true
+          ignoreLastBuildOnBranch: main
+          diagnostics: true
