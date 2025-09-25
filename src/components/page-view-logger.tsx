@@ -22,8 +22,10 @@ export function PageViewLogger({ event, message, context }: PageViewLoggerProps)
     hasLogged.current = true;
 
     const logger = context ? withRequestLogger(context) : getLogger();
+    const telemetryPayload = { ...(context ?? {}), message };
+
     logger.info(message);
-    trackEvent(event);
+    trackEvent(event, telemetryPayload);
   }, [context, event, message]);
 
   return null;
