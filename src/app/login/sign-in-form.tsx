@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { signIn, getProviders, type ClientSafeProvider } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import { getEmailTelemetry } from "@/lib/email";
 import { trackUiEvent } from "@/lib/telemetry";
@@ -27,12 +27,17 @@ const socialProviderOrder = ["google", "apple", "facebook"] as const;
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProviderSubmitting, setIsProviderSubmitting] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [availableProviders, setAvailableProviders] = useState<Record<string, ClientSafeProvider> | null>(null);
+  const handledQueryErrorRef = useRef<string | null>(null);
 
   const isBusy = useMemo(() => isSubmitting || Boolean(isProviderSubmitting), [isSubmitting, isProviderSubmitting]);
+
+  const queryError = searchParams?.get("error") ?? null;
+  const searchParamsString = searchParams?.toString() ?? "";
 
   useEffect(() => {
     let isMounted = true;
@@ -59,6 +64,34 @@ export function LoginForm() {
 
     return socialProviderOrder.filter((provider) => Boolean(availableProviders[provider]));
   }, [availableProviders]);
+
+  useEffect(() => {
+    if (!queryError || handledQueryErrorRef.current === queryError) {
+      return;
+    }
+
+    handledQueryErrorRef.current = queryError;
+
+    const normalized = queryError.toLowerCase();
+    const formSafeError =
+      normalized === "credentialssignin"
+        ? "We couldn't verify those credentials. Give it another lap."
+        : normalized === "oauthsignin"
+          ? "We couldn't reach the identity provider. Please try again."
+          : "We hit a bump while signing you in. Try again, or refresh before your next attempt.";
+
+    const emailTelemetry = getEmailTelemetry(null);
+    trackUiEvent("auth.error", { ...emailTelemetry, code: queryError, surfacedFromQuery: true });
+
+    setPasswordError(formSafeError);
+    setIsSubmitting(false);
+
+    const mutableParams = new URLSearchParams(searchParamsString);
+    mutableParams.delete("error");
+    const nextQuery = mutableParams.toString();
+
+    router.replace(nextQuery ? `/login?${nextQuery}` : "/login");
+  }, [queryError, router, searchParamsString]);
 
   const handleProviderSignIn = async (provider: "google" | "apple" | "facebook") => {
     if (!availableProviders?.[provider]) {
