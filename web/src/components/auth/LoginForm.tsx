@@ -4,19 +4,16 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-import { Divider } from "./Divider";
 import { PrimaryButton } from "./PrimaryButton";
-import { ProviderButton, type AuthProvider } from "./ProviderButton";
 import { TextInput } from "./TextInput";
 
 export interface LoginFormProps {
   isLoading?: boolean;
   errorMessage?: string;
-  provider?: AuthProvider;
   success?: boolean;
 }
 
-export function LoginForm({ isLoading, errorMessage, provider, success }: LoginFormProps) {
+export function LoginForm({ isLoading, errorMessage, success }: LoginFormProps) {
   const searchParams = useSearchParams();
   const [internalError, setInternalError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,8 +58,7 @@ export function LoginForm({ isLoading, errorMessage, provider, success }: LoginF
   }, [isLoading, isSubmitting, success]);
 
   const error = success ? undefined : errorMessage ?? internalError ?? undefined;
-  const providerInProgress = provider ?? null;
-  const disableForm = Boolean(success || providerInProgress || busy);
+  const disableForm = Boolean(success || busy);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -125,24 +121,6 @@ export function LoginForm({ isLoading, errorMessage, provider, success }: LoginF
       <PrimaryButton isLoading={busy} disabled={disableForm && !busy}>
         Sign in
       </PrimaryButton>
-      <Divider />
-      <div className="space-y-3">
-        <ProviderButton
-          provider="google"
-          isLoading={provider === "google"}
-          disabled={disableForm && provider !== "google"}
-        />
-        <ProviderButton
-          provider="apple"
-          isLoading={provider === "apple"}
-          disabled={disableForm && provider !== "apple"}
-        />
-        <ProviderButton
-          provider="facebook"
-          isLoading={provider === "facebook"}
-          disabled={disableForm && provider !== "facebook"}
-        />
-      </div>
     </form>
   );
 }

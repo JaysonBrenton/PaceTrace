@@ -10,10 +10,6 @@ const meta: Meta<typeof LoginScreen> = {
   argTypes: {
     errorMessage: { control: "text" },
     isLoading: { control: "boolean" },
-    provider: {
-      control: "select",
-      options: ["google", "apple", "facebook", undefined],
-    },
     success: { control: "boolean" },
   },
 };
@@ -37,12 +33,6 @@ export const Loading: Story = {
 export const Error: Story = {
   args: {
     errorMessage: "Incorrect password. Try again.",
-  },
-};
-
-export const ProviderInProgress: Story = {
-  args: {
-    provider: "google",
   },
 };
 
