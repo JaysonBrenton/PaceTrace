@@ -2,6 +2,7 @@
 
 import { signOut } from "next-auth/react";
 
+import { getEmailTelemetry } from "@/lib/email";
 import { trackUiEvent } from "@/lib/telemetry";
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 
 export function SignOutButton({ email }: Props) {
   const handleSignOut = async () => {
-    trackUiEvent("auth.signOut", { email });
+    trackUiEvent("auth.signOut", getEmailTelemetry(email));
     await signOut({ callbackUrl: "/login" });
   };
 
