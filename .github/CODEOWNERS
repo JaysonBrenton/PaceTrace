@@ -1,4 +1,6 @@
 # Auth surfaces require design + auth owner review
+src/app/login/** @pacetrace-design @pacetrace-auth
+src/app/(auth)/** @pacetrace-design @pacetrace-auth
 web/src/app/(auth)/** @pacetrace-design @pacetrace-auth
 web/src/components/auth/** @pacetrace-design @pacetrace-auth
 web/src/stories/auth/** @pacetrace-design @pacetrace-auth
