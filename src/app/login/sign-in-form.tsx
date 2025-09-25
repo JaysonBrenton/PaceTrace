@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, getProviders, type ClientSafeProvider } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Fragment, useMemo, useState, type FormEvent } from "react";
+import { Fragment, useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { trackUiEvent } from "@/lib/telemetry";
 
@@ -22,15 +22,48 @@ const providerCopy: Record<string, { label: string; busy: string }> = {
   },
 };
 
+const socialProviderOrder = ["google", "apple", "facebook"] as const;
+
 export function LoginForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProviderSubmitting, setIsProviderSubmitting] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [availableProviders, setAvailableProviders] = useState<Record<string, ClientSafeProvider> | null>(null);
 
   const isBusy = useMemo(() => isSubmitting || Boolean(isProviderSubmitting), [isSubmitting, isProviderSubmitting]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    void getProviders()
+      .then((providers) => {
+        if (!isMounted) return;
+        setAvailableProviders(providers ?? {});
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setAvailableProviders({});
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const enabledSocialProviders = useMemo(() => {
+    if (!availableProviders) {
+      return [];
+    }
+
+    return socialProviderOrder.filter((provider) => Boolean(availableProviders[provider]));
+  }, [availableProviders]);
+
   const handleProviderSignIn = async (provider: "google" | "apple" | "facebook") => {
+    if (!availableProviders?.[provider]) {
+      return;
+    }
+
     setPasswordError(null);
     setIsProviderSubmitting(provider);
     trackUiEvent("auth.provider", { provider });
@@ -150,41 +183,42 @@ export function LoginForm() {
         </button>
       </form>
 
-      <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground/80">
-        <span className="h-px flex-1 bg-muted" aria-hidden />
-        Or continue with
-        <span className="h-px flex-1 bg-muted" aria-hidden />
-      </div>
+      {availableProviders && enabledSocialProviders.length > 0 ? (
+        <Fragment>
+          <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground/80">
+            <span className="h-px flex-1 bg-muted" aria-hidden />
+            Or continue with
+            <span className="h-px flex-1 bg-muted" aria-hidden />
+          </div>
 
-      <div className="space-y-3" aria-label="Social sign in options">
-        <button
-          type="button"
-          className="inline-flex w-full items-center justify-center rounded-full bg-[hsl(var(--color-accent))] px-6 py-3 text-sm font-semibold text-[hsl(var(--color-card))] transition hover:bg-[hsl(var(--color-accent-muted))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-accent)/0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-80"
-          data-analytics-event="auth:provider:google"
-          disabled={isBusy}
-          onClick={() => void handleProviderSignIn("google")}
-        >
-          {isProviderSubmitting === "google" ? providerCopy.google.busy : providerCopy.google.label}
-        </button>
-        <button
-          type="button"
-          className="inline-flex w-full items-center justify-center rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-70"
-          data-analytics-event="auth:provider:apple"
-          disabled={isBusy}
-          onClick={() => void handleProviderSignIn("apple")}
-        >
-          {isProviderSubmitting === "apple" ? providerCopy.apple.busy : providerCopy.apple.label}
-        </button>
-        <button
-          type="button"
-          className="inline-flex w-full items-center justify-center rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:border-[hsl(var(--color-accent-2))] hover:text-[hsl(var(--color-accent-2))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--color-accent-2))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-70"
-          data-analytics-event="auth:provider:facebook"
-          disabled={isBusy}
-          onClick={() => void handleProviderSignIn("facebook")}
-        >
-          {isProviderSubmitting === "facebook" ? providerCopy.facebook.busy : providerCopy.facebook.label}
-        </button>
-      </div>
+          <div className="space-y-3" aria-label="Social sign in options">
+            {enabledSocialProviders.map((provider) => (
+              <button
+                key={provider}
+                type="button"
+                className={
+                  provider === "google"
+                    ? "inline-flex w-full items-center justify-center rounded-full bg-[hsl(var(--color-accent))] px-6 py-3 text-sm font-semibold text-[hsl(var(--color-card))] transition hover:bg-[hsl(var(--color-accent-muted))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-accent)/0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-80"
+                    : provider === "apple"
+                      ? "inline-flex w-full items-center justify-center rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-70"
+                      : "inline-flex w-full items-center justify-center rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:border-[hsl(var(--color-accent-2))] hover:text-[hsl(var(--color-accent-2))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--color-accent-2))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-70"
+                }
+                data-analytics-event={`auth:provider:${provider}`}
+                disabled={isBusy}
+                onClick={() => void handleProviderSignIn(provider)}
+              >
+                {isProviderSubmitting === provider ? providerCopy[provider].busy : providerCopy[provider].label}
+              </button>
+            ))}
+          </div>
+        </Fragment>
+      ) : null}
+
+      {availableProviders && enabledSocialProviders.length === 0 ? (
+        <p className="text-center text-sm text-muted-foreground" role="status">
+          Single sign-on providers will appear here once configured for your team.
+        </p>
+      ) : null}
     </Fragment>
   );
 }
