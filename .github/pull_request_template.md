@@ -2,7 +2,7 @@
 - 
 
 ## Auth Story Links
-Provide the Chromatic or Storybook URLs and mark whether the implementation conforms to the spec or documents an intentional deviation.
+Provide the Chromatic or Storybook URLs whenever the change touches `src/app/login/**`, `src/app/(auth)/**`, or `web/src/app/(auth)/**`. Mark whether the implementation conforms to the spec or documents an intentional deviation.
 
 | Story | Link | Status (Conforms / Intentional deviation) |
 | --- | --- | --- |

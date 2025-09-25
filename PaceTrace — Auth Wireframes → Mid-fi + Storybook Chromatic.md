@@ -14,7 +14,18 @@ Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (
   - `--color-accent-2` = `#0FFCBE` (mint)
   - `--color-danger` = `#D92D20` (error)
   - Neutrals: `--color-bg`, `--color-fg`, `--color-muted`, `--color-border`
-- Tech: Next.js (web/), Tailwind, Storybook, Chromatic. Use accessible patterns (labels, aria, keyboard order).
+- Tech: Next.js, Tailwind, Storybook, Chromatic. Use accessible patterns (labels, aria, keyboard order).
+
+## Workspace map
+
+| Concern | Production path | Reference workspace path | Notes |
+| --- | --- | --- | --- |
+| Pages & layouts | `src/app/login/**` (and future `src/app/(auth)/**` folders) | `web/src/app/(auth)/**` | Stories in `web/` drive the UX; production mirrors approved changes. |
+| Shared components | `src/app/login/components/**` (or `src/app/(auth)/components/**` when promoted) | `web/src/components/auth/**` | Move code from `web/` into root once Chromatic and review sign-off land. |
+| Design tokens | `src/app/globals.css` | `web/src/styles/tokens.css` | Tokens originate in `web/` and are consumed globally in both workspaces. |
+| Stories | — | `web/src/stories/auth/**` | Chromatic snapshots enforce visual parity. |
+
+The quick-reference tables below replace the scattered reminders that previously repeated these paths in each section.
 
 # Goals (do all)
 1) **Design tokens & Tailwind wiring**
@@ -24,7 +35,7 @@ Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (
    - Rule: ban raw hex in components—only tokens.
 
 2) **Auth components (desktop)**
-   Create in `web/src/components/auth/`:
+   Build and maintain the components in `web/src/components/auth/` first, then promote to `src/app/login` (or the eventual `src/app/(auth)` slice) when stable:
    - `AuthHeader` (title + helper): uses header copy; links logo/title to `/`.
    - `AuthCard` (container: title, helper, content slot).
    - `TextInput` (label, input, inline error slot, proper `autocomplete`).
@@ -39,7 +50,7 @@ Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (
    - Spacing: base 16px; 24px between form groups; 12px inline.
 
 3) **Mid-fi screen compositions (for Storybook)**
-   Compose desktop screens (no routing changes needed for this task):
+   Compose desktop screens (no routing changes needed for this task) under `web/src/stories/auth/` and mirror production in `src/app/login` (or `src/app/(auth)` once introduced):
    - **Login**: Email, Password, Remember me, Sign in, Divider, Providers (G/A/F), Create account link.
    - **Register**: Email, Display name, Password (rules hint only), Create account, Divider, Providers.
    - **Forgot Password**: Email + Send reset link; generic success state (no enumeration).
@@ -61,6 +72,12 @@ Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (
    - `Auth/Forgot/Sent`
    Add Storybook args/controls: `errorMessage?: string`, `isLoading?: boolean`, `provider?: 'google'|'apple'|'facebook'`.
 
+   | Story ID | File | Production reference |
+   | --- | --- | --- |
+   | `Auth/Login/*` | `web/src/stories/auth/Login.stories.tsx` | `src/app/login/page.tsx` & `src/app/login/sign-in-form.tsx` |
+   | `Auth/Register/*` | `web/src/stories/auth/Register.stories.tsx` | Mirrors upcoming `src/app/(auth)/register` promotion (spec in this doc). |
+   | `Auth/Forgot/*` | `web/src/stories/auth/Forgot.stories.tsx` | Mirrors upcoming `src/app/(auth)/forgot-password` promotion (spec in this doc). |
+
 5) **A11y**
    - Logical focus order: title → inputs → primary CTA → providers → links.
    - Provider buttons include accessible names (e.g., “Continue with Google”).
@@ -73,12 +90,9 @@ Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (
    - Threshold: strict for layout/visibility; allow minor anti-aliasing text differences.
 
 7) **Governance**
-   - Update `.github/pull_request_template.md`: When touching `src/app/(auth)/**`, link to the relevant Storybook stories and confirm “conforms” or “intentional deviation”.
-   - Add `CODEOWNERS` so auth changes require review by the design/UX owner and the auth code owner.
-   - Add a note in README or `docs/authentication.md` pointing to:
-     - Tokens file and usage rules (no raw hex).
-     - Storybook “Theme” page for Blue & Mint.
-     - Auth stories as the visual contract.
+   - Update `.github/pull_request_template.md`: When touching `src/app/login/**`, `src/app/(auth)/**`, **or** `web/src/app/(auth)/**`, link to the relevant Storybook stories and confirm “conforms” or “intentional deviation”.
+   - Add `CODEOWNERS` so auth changes require review by the design/UX owner and the auth code owner across both workspaces.
+   - Add a note in README or `docs/authentication.md` pointing to the shared token rules, Theme story, and Chromatic contract (see Quick Reference in that doc).
 
 # Acceptance Criteria (must all pass)
 - All tokens exist and components use tokens (no raw hex in component code).
