@@ -5,6 +5,7 @@ import { signIn, getProviders, type ClientSafeProvider } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState, type FormEvent } from "react";
 
+import { getEmailTelemetry } from "@/lib/email";
 import { trackUiEvent } from "@/lib/telemetry";
 
 const providerCopy: Record<string, { label: string; busy: string }> = {
@@ -84,9 +85,9 @@ export function LoginForm() {
     const formData = new FormData(form);
     const email = (formData.get("email") as string | null)?.trim();
     const password = (formData.get("password") as string | null) ?? "";
-    const remember = formData.get("remember") === "on";
+    const emailTelemetry = getEmailTelemetry(email);
 
-    trackUiEvent("auth.submit", { email, remember });
+    trackUiEvent("auth.submit", emailTelemetry);
 
     const result = await signIn("credentials", {
       redirect: false,
@@ -97,13 +98,13 @@ export function LoginForm() {
 
     if (result?.error) {
       setPasswordError("We couldn't verify those credentials. Give it another lap.");
-      trackUiEvent("auth.error", { email, code: result.error });
+      trackUiEvent("auth.error", { ...emailTelemetry, code: result.error });
       setIsSubmitting(false);
       return;
     }
 
     if (result?.url) {
-      trackUiEvent("auth.success", { email });
+      trackUiEvent("auth.success", emailTelemetry);
       router.push(result.url);
       router.refresh();
       form.reset();
@@ -159,17 +160,7 @@ export function LoginForm() {
           ) : null}
         </div>
 
-        <div className="flex items-center justify-between text-sm">
-          <label className="inline-flex items-center gap-2 text-muted-foreground" htmlFor="remember">
-            <input
-              id="remember"
-              name="remember"
-              type="checkbox"
-              disabled={isBusy}
-              className="h-4 w-4 rounded border border-border bg-transparent text-accent focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-[hsl(var(--color-bg))]"
-            />
-            Remember me
-          </label>
+        <div className="flex justify-end text-sm">
           <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Lap ready</span>
         </div>
 

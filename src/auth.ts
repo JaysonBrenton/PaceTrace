@@ -2,9 +2,17 @@ import NextAuth, { type NextAuthOptions, getServerSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 import { getLogger } from "@/lib/logging";
+import { normalizeEmail, redactEmail, getEmailTelemetry } from "@/lib/email";
 import { trackAuthEvent } from "@/lib/telemetry";
 
-const demoEmail = process.env.AUTH_DEMO_EMAIL ?? "driver@pacetrace.app";
+const configuredDemoEmail = process.env.AUTH_DEMO_EMAIL;
+const fallbackDemoEmail = "driver@pacetrace.app";
+const demoEmailSource =
+  configuredDemoEmail && configuredDemoEmail.trim().length > 0
+    ? configuredDemoEmail
+    : fallbackDemoEmail;
+const demoEmail = normalizeEmail(demoEmailSource);
+const demoEmailPlaceholder = demoEmailSource.trim();
 const demoPassword = process.env.AUTH_DEMO_PASSWORD ?? "pitlane";
 
 export const authOptions: NextAuthOptions = {
@@ -12,13 +20,13 @@ export const authOptions: NextAuthOptions = {
     Credentials({
       name: "Email",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: demoEmail },
+        email: { label: "Email", type: "email", placeholder: demoEmailPlaceholder },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
         const logger = getLogger();
         logger.info("auth.credentials.attempt", {
-          email: credentials?.email,
+          email: credentials?.email ? redactEmail(credentials.email) : undefined,
         });
 
         if (!credentials?.email || !credentials.password) {
@@ -29,7 +37,9 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const normalizedEmail = credentials.email.trim().toLowerCase();
+        const normalizedEmail = normalizeEmail(credentials.email);
+        const emailTelemetry = getEmailTelemetry(normalizedEmail);
+        const redacted = redactEmail(normalizedEmail);
         const password = credentials.password;
 
         if (normalizedEmail === demoEmail && password === demoPassword) {
@@ -40,23 +50,19 @@ export const authOptions: NextAuthOptions = {
             role: "owner" as const,
           };
 
-          trackAuthEvent("credentials.success", {
-            email: normalizedEmail,
-          });
+          trackAuthEvent("credentials.success", emailTelemetry);
 
           logger.info("auth.credentials.success", {
-            email: normalizedEmail,
+            email: redacted,
           });
 
           return user;
         }
 
-        trackAuthEvent("credentials.failure", {
-          email: normalizedEmail,
-        });
+        trackAuthEvent("credentials.failure", emailTelemetry);
 
         logger.warn("auth.credentials.invalid", {
-          email: normalizedEmail,
+          email: redacted,
         });
 
         return null;

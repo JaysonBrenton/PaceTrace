@@ -49,11 +49,8 @@ export function LoginScreen({ isLoading, errorMessage, provider, success }: Logi
               disabled={disableForm}
               error={!success ? errorMessage : undefined}
             />
-            <div className="flex items-center justify-between text-sm text-muted">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" name="remember" defaultChecked disabled={disableForm} />
-                <span>Remember me</span>
-              </label>
+            <div className="flex justify-between text-sm text-muted">
+              <span className="uppercase tracking-[0.22em]">Lap ready</span>
               <a className="text-accent" href="/forgot-password">
                 Forgot password?
               </a>
