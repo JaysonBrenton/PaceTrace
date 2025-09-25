@@ -38,8 +38,10 @@
   },
   "include": [
     "next-env.d.ts",
+    "mdx.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.mdx",
     ".next/types/**/*.ts"
   ],
   "exclude": [
