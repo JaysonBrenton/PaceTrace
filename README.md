@@ -1,55 +1,55 @@
 # PaceTrace
 
-PaceTrace is a multi-tenant telemetry and coaching platform for RC racing teams. This repository currently contains two cooperating Next.js workspaces:
-
-1. **Production app (repo root)** – ships the marketing shell and `/login` experience that systemd deploys today.
-2. **`web/` workspace** – houses the design system, Storybook, Chromatic automation, and mid-fi authentication flows that backstop the production implementation.
+PaceTrace is a multi-tenant telemetry and coaching platform for RC racing teams. The repository now ships a **single Next.js runtime** from the repo root. This app owns the production UI, registration APIs, Prisma schema, and mailer utilities that previously lived under the temporary `web/` workspace.
 
 ## Getting started
 
-Install dependencies (already installed in this workspace) and run the development server:
-
-```bash
-npm install
-npm run dev
-```
-
-Then open [http://localhost:3000](http://localhost:3000) to explore the marketing shell and navigate to `/login` for the authentication experience.
-
-The `web/` workspace can be developed independently for Storybook and Chromatic snapshots:
-
-```bash
-cd web
-npm install
-npm run dev    # Storybook and Next dev scripts are defined locally
-```
-
-### Resolving 500 errors from `/api/register`
-
-If the registration form responds with a 500 status and the UI shows "We couldn't process that request," Prisma is failing to connect to the database. Populate the environment variables before retrying:
-
-1. Copy `.env.example` to `.env.local` (or the environment file used in your deployment) and provide a valid Postgres connection string for `DATABASE_URL`.
-2. Make sure the referenced database exists and is reachable from the app container or host.
-3. Apply the migrations so Prisma can create the required tables:
-
+1. Install dependencies:
    ```bash
-   npx prisma migrate deploy --schema web/prisma/schema.prisma
+   npm install
    ```
+2. Generate the Prisma client and sync migrations against the database referenced by `DATABASE_URL`:
+   ```bash
+   npx prisma generate
+   npx prisma migrate deploy
+   ```
+3. Run the development server (port 3001 keeps parity with production bindings):
+   ```bash
+   npm run dev -- --hostname 0.0.0.0 --port 3001
+   ```
+4. Open [http://localhost:3001](http://localhost:3001) to explore the marketing shell and navigate to `/login` or `/register` for the authentication flows.
 
-4. Restart the Next.js server so the updated environment variables are loaded.
+Environment variables required for local development live in `.env.example`. Copy it to `.env` (or `.env.local`) and fill in:
 
-Prisma reads `DATABASE_URL` from the environment when instantiating `PrismaClient`, so missing or incorrect values prevent the `/api/register` transaction from reaching Postgres.
+- `DATABASE_URL`
+- `NEXTAUTH_URL`
+- `NEXTAUTH_SECRET`
+- `EMAIL_FROM`
 
-### Authentication
+Optional SMTP variables enable transactional email delivery. Without them the mailer falls back to console logging.
 
-PaceTrace now ships with demo credentials wired through a NextAuth credentials provider. Sign in at `/login` with:
+## API surface
 
-```
-Email: driver@pacetrace.app
-Password: pitlane
-```
+The root app serves the following routes:
 
-Override the defaults by setting `AUTH_DEMO_EMAIL` and `AUTH_DEMO_PASSWORD` in your environment. Provide a `NEXTAUTH_SECRET` when deploying to production.
+- `POST /api/register` – creates a pending user, emits approval tokens, and notifies admins.
+- `GET /api/approvals/[token]` – approves or denies a pending user based on the token action.
+- `GET /api/health` – lightweight readiness probe returning `{ ok: true }` when the server is up.
+- `GET /api/ready` – returns 200 only when required env vars are present, Prisma can connect, and all migrations are applied.
+- `GET /api/version` – exposes the package version for observability hooks.
+- `GET/POST /api/auth/[...nextauth]` – NextAuth credential provider.
+
+### Troubleshooting `/api/register`
+
+If the registration form responds with HTTP 500 and the UI shows "We couldn't process that request," Prisma failed to connect to the database. Verify the environment and migrations:
+
+1. Copy `.env.example` to your active environment file and provide a valid Postgres `DATABASE_URL`.
+2. Ensure the referenced database is reachable from your machine or container.
+3. Apply migrations from the root Prisma schema:
+   ```bash
+   npx prisma migrate deploy --schema prisma/schema.prisma
+   ```
+4. Restart the Next.js server to pick up the updated environment variables.
 
 ## Available scripts
 
@@ -60,39 +60,33 @@ Override the defaults by setting `AUTH_DEMO_EMAIL` and `AUTH_DEMO_PASSWORD` in y
 | `npm run start` | Runs the production build. |
 | `npm run lint` | Lints the project with Next.js/ESLint defaults. |
 
-The `web/` workspace mirrors these commands and also exposes `npm run storybook` and `npm run chromatic` for visual regression testing.
-
 ## Project structure
 
 ```
+prisma/                 # Prisma schema and migrations (single source of truth)
 src/
   app/
-    (app)/          # Authenticated routes and layout
-    api/auth/       # NextAuth handler
-    layout.tsx      # Global font loading and metadata
-    login/          # Sign-in screen + client form logic
-    page.tsx        # Landing page scaffold
-  app/globals.css   # Tailwind + design tokens
+    api/                # Next.js App Router API handlers (register, approvals, auth, health, ready, version)
+    globals.css         # Tailwind setup + imports semantic design tokens
+    layout.tsx          # Root layout, fonts, and metadata
+    login/              # Sign-in screen + client form logic
+    register/           # Registration form promoted from Storybook workspace
+  components/auth/      # Token-driven building blocks (buttons, forms, screens)
+  server/               # Prisma client and mailer utilities shared across routes
 ```
 
-Tailwind is configured with semantic tokens (background, card, accent, etc.) to make it easy to extend the design system as authenticated surfaces come online. The login form includes analytics-friendly attributes so future telemetry hooks can be wired without redesigning the UI.
+Design tokens now live at `src/styles/tokens.css` and are imported by `src/app/globals.css`. Tailwind exposes semantic utilities (background, accent, muted, etc.) that map to those variables so UI code avoids hard-coded hex values.
 
-```text
-web/
-  src/app/(auth)/...      # Mid-fi auth implementations kept in sync with Storybook
-  src/components/auth/    # Token-driven building blocks (buttons, inputs, providers)
-  src/styles/tokens.css   # Source of truth for shared CSS variables
-  src/stories/auth/       # Storybook states exercised by Chromatic
-```
+## Operations
 
-> The root app consumes the same token palette via `src/app/globals.css` and currently implements the login surface in `src/app/login`. Keep the directories in sync with the Storybook workspace when promoting changes.
-
-## Observability hooks
-
-Structured logging and telemetry helpers live in `src/lib/logging.ts` and `src/lib/telemetry.ts`. The authentication flow, protected layouts, and dashboard surfaces publish events so backend services can ingest them as the platform matures.
+- Deployments remain orchestrated by `~/bin/pacetrace-deploy`, which wraps `scripts/deploy.sh`. The helper performs `npm ci`, runs `npx prisma migrate deploy`, and then restarts the systemd unit.
+- The systemd reference unit (`docs/systemd/pacetrace.service`) issues the same guarded migrate as an `ExecStartPre` step before starting `npm run dev -- --hostname 0.0.0.0 --port 3001`.
+- Health probes should target `/api/health`. Readiness and rollout automation should poll `/api/ready` before accepting traffic.
 
 ## Visual workflow
 
-- **Design tokens** – maintained in `web/src/styles/tokens.css` and surfaced locally through Tailwind utility classes.
-- **Storybook** – run `npm run storybook` inside `web/` to review the `Auth/*` stories, including loading, error, provider, and success states.
-- **Chromatic** – CI blocks merges on unexpected visual diffs for the auth surfaces; link the review in pull requests per the template.
+Storybook is currently offline; the approved auth components now live directly in the production app under `src/components/auth/`. Future design explorations can reintroduce Storybook at the root without owning routes or Prisma. Keep the components token-driven and aligned with the flows documented in `docs/authentication.md` and `PaceTrace — Auth Wireframes → Mid-fi + Storybook Chromatic.md`.
+
+## Observability hooks
+
+Structured logging and telemetry helpers live in `src/lib/logging.ts` and `src/lib/telemetry.ts`. Authentication flows and protected layouts publish events so backend services can ingest them as the platform matures.

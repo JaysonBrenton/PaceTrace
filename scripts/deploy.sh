@@ -2,8 +2,8 @@
 set -euo pipefail
 
 APP_ROOT="/home/jayson/Development/PaceTrace"
-# Default to web/ since pacetrace.service runs there; override with PACETRACE_APP_DIR if needed
-APP_DIR="${PACETRACE_APP_DIR:-web}"
+# Default to the root app; override with PACETRACE_APP_DIR if needed
+APP_DIR="${PACETRACE_APP_DIR:-.}"
 SERVICE="pacetrace.service"
 PORT="${PORT:-3001}"
 

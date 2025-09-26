@@ -1,3 +1,5 @@
+> **Historical reference:** the `web/` workspace has been removed as part of the One-App Plan. These notes remain for archival purposes; all production code now lives under `src/`.
+
 Act as lead developer. Implement an email-based account approval flow in the **web/** Next.js app (web/src/app/*), using Prisma + Postgres + Nodemailer. Keep diffs small and modular.
 
 Requirements

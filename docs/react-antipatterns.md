@@ -98,7 +98,7 @@ function Providers() {
 
 | What to avoid | Better approach | Exception cues |
 | --- | --- | --- |
-| Inlining raw hex values or recreating Tailwind classes ad hoc. | Consume the design tokens declared in `web/src/styles/tokens.css` via Tailwind utilities or CSS variables. | Temporary palette exploration should happen in Storybook branches and document the rationale in PRs. |
+| Inlining raw hex values or recreating Tailwind classes ad hoc. | Consume the design tokens declared in `src/styles/tokens.css` via Tailwind utilities or CSS variables. | Temporary palette exploration should happen in design spikes and document the rationale in PRs. |
 | Declaring style objects inside component bodies. | Move them to module scope or convert them into Tailwind utility classes. | Inline styles with runtime-dependent values (e.g., dynamic gradients) are fine but document the reasoning. |
 
 ## Additional references

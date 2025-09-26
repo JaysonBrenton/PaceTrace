@@ -6,10 +6,10 @@ PORT        = 3001
 
 ## Repository layout
 - **Production app**: single-package Next.js project at the repo root (package.json in PROJECT_DIR). This is what systemd launches in production today.
-- **Workspace sandbox**: the `web/` directory contains a parallel Next.js workspace that houses Storybook, Chromatic, and design-token tooling. Nothing in the existing systemd unit references this workspace.
-- Prisma schema (when present) lives at `PROJECT_DIR/prisma/schema.prisma` and is shared by both layouts.
+- **Optional Storybook sandbox**: if reintroduced, it must live at the repo root (not `web/`) and cannot own Prisma, database migrations, or API routes.
+- Prisma schema (when present) lives at `PROJECT_DIR/prisma/schema.prisma` and is shared by all tooling.
 
-> The legacy guardrail referred only to the root app; these notes clarify that the additional `web/` workspace is intentionally **out of scope** for production deploys unless a future “Monorepo move to web/” task explicitly says otherwise.
+> Legacy references to a `web/` workspace are historical; production code and Prisma now live exclusively under the root app.
 
 ## Systemd (production runtime)
 - User unit name MUST remain: pacetrace.service
@@ -27,6 +27,7 @@ Why these constraints?
 ## Deployment helper
 - Keep and do not modify: PROJECT_DIR/scripts/deploy.sh
 - After changes, call: `~/bin/pacetrace-deploy` (or PROJECT_DIR/scripts/deploy.sh)
+- `pacetrace-deploy` is authoritative for live rollouts and is responsible for invoking the guarded `ExecStartPre` (`npx prisma migrate deploy --schema PROJECT_DIR/prisma/schema.prisma`) before systemd starts the service.
 
 > `~/bin/pacetrace-deploy` is provisioned on the target server and simply shells out to the repo script above. The helper is **not** committed to this repository.
 
@@ -35,13 +36,8 @@ File scope for this task:
 - You MUST NOT touch: ~/.config/systemd/user/pacetrace.service, PROJECT_DIR/scripts/deploy.sh, .env*, runtime env files, or any system paths.
 
 ## Monorepo note
-- Do NOT move the app into web/ unless I start a task titled **"Monorepo move to web/"**.
-- If (and only if) that task is given, you must:
-  - Create PROJECT_DIR/web with its own package.json and move app code there.
-  - Keep Prisma at PROJECT_DIR/prisma (do not relocate).
-  - Update systemd ExecStart to: `npm --prefix PROJECT_DIR/web run dev -- --hostname 0.0.0.0 --port 3001`
-  - Leave the guarded migrate ExecStartPre as-is (absolute --schema path).
-  - Ensure PROJECT_DIR/scripts/deploy.sh still works (it already auto-detects root vs web/).
+- Do NOT resurrect the legacy `web/` workspace unless explicitly tasked to do so.
+- Any future multi-app layout must keep Prisma at `PROJECT_DIR/prisma`, maintain the guarded migrate `ExecStartPre`, and preserve the production service command shape documented above.
 
 Performance & UX guardrails:
 - Tailwind + semantic CSS tokens only; no Emotion, no MobX.
