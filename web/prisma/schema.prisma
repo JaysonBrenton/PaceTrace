@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}
+
+enum ApprovalAction {
+  APPROVE
+  DENY
+}
+
+model User {
+  id           String          @id @default(cuid())
+  email        String          @unique
+  name         String?
+  passwordHash String?
+  status       UserStatus      @default(PENDING)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  approvalRequest ApprovalRequest?
+  approvalTokens  ApprovalToken[]
+}
+
+model ApprovalRequest {
+  id        String          @id @default(cuid())
+  userId    String          @unique
+  reason    String?
+  createdAt DateTime        @default(now())
+  decidedAt DateTime?
+  decision  ApprovalAction?
+  decidedBy String?
+  user      User            @relation(fields: [userId], references: [id])
+}
+
+model ApprovalToken {
+  id        String         @id @default(cuid())
+  userId    String
+  token     String         @unique
+  action    ApprovalAction
+  expiresAt DateTime
+  createdAt DateTime       @default(now())
+  user      User           @relation(fields: [userId], references: [id])
+}
