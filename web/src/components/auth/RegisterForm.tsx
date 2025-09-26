@@ -1,42 +1,114 @@
 "use client";
 
-import type { FormHTMLAttributes } from "react";
-import { useFormStatus } from "react-dom";
+import type { FormEvent } from "react";
+import { useMemo, useState } from "react";
 
 import { ErrorBanner } from "./ErrorBanner";
 import { PrimaryButton } from "./PrimaryButton";
 import { TextInput } from "./TextInput";
 
-interface RegisterFormProps extends Pick<FormHTMLAttributes<HTMLFormElement>, "action"> {
-  errorMessage?: string;
-  success?: boolean;
+const REGISTER_ERROR_MESSAGES: Record<string, string> = {
+  missingFields: "We need all fields to keep your workspace request on track.",
+  invalidEmail: "That email format looks off. Double-check it before resubmitting.",
+  weakPassword: "Passwords need at least 8 characters to stay race-ready.",
+  emailInUse: "That email already has an account in review.",
+  invalidInput: "We need valid account details to continue.",
+  unknown: "We couldn't process that request. Please try again.",
+};
+
+function validateForm(form: HTMLFormElement) {
+  const email = (form.email?.value as string | undefined)?.trim() ?? "";
+  const displayName = (form.displayName?.value as string | undefined)?.trim() ?? "";
+  const password = (form.password?.value as string | undefined) ?? "";
+
+  if (!email || !displayName || !password) {
+    return { error: "missingFields" } as const;
+  }
+
+  if (!/^.+@.+\..+$/.test(email)) {
+    return { error: "invalidEmail" } as const;
+  }
+
+  if (password.length < 8) {
+    return { error: "weakPassword" } as const;
+  }
+
+  return {
+    data: {
+      email,
+      name: displayName,
+      password,
+    },
+  } as const;
 }
 
-export function RegisterForm({ action, errorMessage, success }: RegisterFormProps) {
-  return (
-    <form className="space-y-6" aria-label="Create account form" action={action}>
-      <RegisterFormContent errorMessage={errorMessage} success={success} />
-    </form>
-  );
-}
+export function RegisterForm() {
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | undefined>();
+  const [success, setSuccess] = useState(false);
 
-function RegisterFormContent({ errorMessage, success }: { errorMessage?: string; success?: boolean }) {
-  const { pending } = useFormStatus();
-  const disableFields = pending || Boolean(success);
+  const disableFields = pending || success;
+
+  const errorMessage = useMemo(() => {
+    if (!error) {
+      return undefined;
+    }
+
+    return REGISTER_ERROR_MESSAGES[error] ?? REGISTER_ERROR_MESSAGES.unknown;
+  }, [error]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (pending) {
+      return;
+    }
+
+    const form = event.currentTarget;
+    const validation = validateForm(form);
+
+    if ("error" in validation) {
+      setError(validation.error);
+      return;
+    }
+
+    setError(undefined);
+    setPending(true);
+
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(validation.data),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => undefined)) as { error?: string } | undefined;
+        setError(payload?.error ?? "unknown");
+        return;
+      }
+
+      setSuccess(true);
+      form.reset();
+    } catch (submitError) {
+      console.error("[register] submission failed", submitError);
+      setError("unknown");
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
-    <>
+    <form className="space-y-6" aria-label="Create account form" onSubmit={handleSubmit}>
       {errorMessage && !success ? <ErrorBanner message={errorMessage} /> : null}
       {success ? (
         <p
           role="status"
           className="rounded-lg border border-accent/30 bg-[color:color-mix(in_srgb,var(--color-accent)_12%,transparent)] px-4 py-3 text-sm text-accent"
         >
-          Account request received — continue to {" "}
-          <a className="underline-offset-4 hover:underline" href="/login">
-            Login
-          </a>
-          .
+          Thanks — your account is pending approval.
         </p>
       ) : null}
       <TextInput
@@ -68,15 +140,9 @@ function RegisterFormContent({ errorMessage, success }: { errorMessage?: string;
         />
         <p className="text-sm text-muted">Use at least 8 characters with a mix of numbers and symbols.</p>
       </div>
-      <RegisterSubmitButton pending={pending} disabled={disableFields && !pending} />
-    </>
-  );
-}
-
-function RegisterSubmitButton({ pending, disabled }: { pending: boolean; disabled: boolean }) {
-  return (
-    <PrimaryButton isLoading={pending} disabled={disabled}>
-      Request access
-    </PrimaryButton>
+      <PrimaryButton isLoading={pending} disabled={disableFields && !pending}>
+        Request access
+      </PrimaryButton>
+    </form>
   );
 }

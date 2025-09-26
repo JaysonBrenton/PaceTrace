@@ -30,3 +30,12 @@ PaceTrace ships two authentication implementations that stay in lockstep:
 - Auth flows are captured as dedicated stories under `Auth/` (Login, Register, Forgot) with state coverage for default, loading, error, provider in progress, and success.
 - These stories are the visual contract for Chromatic. Any UI adjustment must update the appropriate story and pass the Chromatic check before merge.
 - Chromatic is configured to block pull requests on unexpected layout or visibility diffs. Approvals require both design and auth-owner sign-off per CODEOWNERS.
+
+## Account approvals
+
+- Registration creates a `User` record in a **pending** state and stores the Argon2id hash of the password.
+- Every registration opens an `ApprovalRequest` and issues paired approval and denial tokens that expire after `APPROVAL_TOKEN_TTL_HOURS` (default 48h).
+- Administrators receive an email with Approve and Deny buttons (`/api/approvals/[token]`). Links also log to the server when SMTP delivery fails.
+- Approving the request sets the user to **ACTIVE**, records the admin IP address and timestamp, cleans up outstanding tokens, and emails the requester.
+- Denying the request marks the user **REJECTED**, records metadata, removes tokens, and notifies the requester.
+- NextAuth blocks sign-in for any account whose status is not **ACTIVE**, returning an `Account pending approval` error.
