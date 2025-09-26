@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 
+import { prisma } from "@/server/prisma";
+
 interface MailerUser {
   email: string;
   name?: string | null;
@@ -15,13 +17,55 @@ function resolveEmailFrom() {
   return from;
 }
 
-function resolveAdminRecipients(): string[] {
-  const raw = process.env.APPROVAL_ADMIN_EMAILS ?? "";
+const DEFAULT_APPROVER_EMAIL = "jaysoncareybrenton@gmail.com";
 
-  return raw
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
+function normalizeEmailKey(email: string) {
+  return email.trim().toLowerCase();
+}
+
+async function resolveAdminRecipients(): Promise<string[]> {
+  const unique = new Map<string, string>();
+
+  const register = (email: string | null | undefined) => {
+    if (!email) {
+      return;
+    }
+
+    const trimmed = email.trim();
+
+    if (!trimmed) {
+      return;
+    }
+
+    const key = normalizeEmailKey(trimmed);
+
+    if (!unique.has(key)) {
+      unique.set(key, trimmed);
+    }
+  };
+
+  const dbRecipients = await prisma.approvalRecipient.findMany({
+    select: { email: true },
+  });
+
+  for (const recipient of dbRecipients) {
+    register(recipient.email);
+  }
+
+  const envRecipients = (process.env.APPROVAL_ADMIN_EMAILS ?? "").split(",");
+
+  for (const recipient of envRecipients) {
+    register(recipient);
+  }
+
+  if (unique.size === 0) {
+    console.warn(
+      `[mailer] No admin recipients configured for approval workflow; falling back to ${DEFAULT_APPROVER_EMAIL}`,
+    );
+    register(DEFAULT_APPROVER_EMAIL);
+  }
+
+  return Array.from(unique.values());
 }
 
 function isConsoleFallback() {
@@ -82,12 +126,7 @@ async function deliverMail(message: nodemailer.SendMailOptions) {
 }
 
 export async function sendAdminApprovalRequest(user: MailerUser, approveUrl: string, denyUrl: string) {
-  const recipients = resolveAdminRecipients();
-
-  if (recipients.length === 0) {
-    console.warn("[mailer] No admin recipients configured for approval workflow");
-    return;
-  }
+  const recipients = await resolveAdminRecipients();
 
   const name = user.name ? `${user.name} <${user.email}>` : user.email;
   const subject = `New PaceTrace account request: ${name}`;
