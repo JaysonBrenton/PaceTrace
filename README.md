@@ -24,6 +24,22 @@ npm install
 npm run dev    # Storybook and Next dev scripts are defined locally
 ```
 
+### Resolving 500 errors from `/api/register`
+
+If the registration form responds with a 500 status and the UI shows "We couldn't process that request," Prisma is failing to connect to the database. Populate the environment variables before retrying:
+
+1. Copy `.env.example` to `.env.local` (or the environment file used in your deployment) and provide a valid Postgres connection string for `DATABASE_URL`.
+2. Make sure the referenced database exists and is reachable from the app container or host.
+3. Apply the migrations so Prisma can create the required tables:
+
+   ```bash
+   npx prisma migrate deploy --schema web/prisma/schema.prisma
+   ```
+
+4. Restart the Next.js server so the updated environment variables are loaded.
+
+Prisma reads `DATABASE_URL` from the environment when instantiating `PrismaClient`, so missing or incorrect values prevent the `/api/register` transaction from reaching Postgres.
+
 ### Authentication
 
 PaceTrace now ships with demo credentials wired through a NextAuth credentials provider. Sign in at `/login` with:
