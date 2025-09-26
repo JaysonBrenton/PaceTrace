@@ -35,7 +35,19 @@ PaceTrace ships two authentication implementations that stay in lockstep:
 
 - Registration creates a `User` record in a **pending** state and stores the Argon2id hash of the password.
 - Every registration opens an `ApprovalRequest` and issues paired approval and denial tokens that expire after `APPROVAL_TOKEN_TTL_HOURS` (default 48h).
-- Administrators receive an email with Approve and Deny buttons (`/api/approvals/[token]`). Links also log to the server when SMTP delivery fails.
+- Administrators receive an email with Approve and Deny buttons (`/api/approvals/[token]`). Approver recipients can be managed through the `ApprovalRecipient` table (or via `APPROVAL_ADMIN_EMAILS`), and default to `jaysoncareybrenton@gmail.com` if no configuration exists. Links also log to the server when SMTP delivery fails.
 - Approving the request sets the user to **ACTIVE**, records the admin IP address and timestamp, cleans up outstanding tokens, and emails the requester.
 - Denying the request marks the user **REJECTED**, records metadata, removes tokens, and notifies the requester.
 - NextAuth blocks sign-in for any account whose status is not **ACTIVE**, returning an `Account pending approval` error.
+
+### Approval workflow status
+
+- The `/api/register` endpoint persists new users as **PENDING**, opens an `ApprovalRequest`, and issues paired approve/deny tokens stored in `ApprovalToken`. Email delivery falls back to console logging if SMTP is unavailable. The approval endpoint (`/api/approvals/[token]`) updates the user status, records the decision, and informs the requester.
+- Audit data currently covers timestamps, decision outcomes, and the approver IP (captured inside the approval endpoint). Supporting document capture and richer approver notes are not yet implemented.
+
+### Next steps for operational readiness
+
+- Build an administrative surface (UI or CLI) to manage entries in `ApprovalRecipient`, ensuring business owners can align routing rules with policy changes without direct database access. This aligns with Salesforce's approval-process guidance around “Identify Approvers” and “Define Steps and Actions.”
+- Extend logging to include structured audit events (e.g., who initiated the decision, attached documents) so the full approval trail is queryable, mirroring the audit recommendations from Salesforce's approval framework.
+- Add SLA tracking/notifications (e.g., reminders when requests remain pending beyond the TTL) to maintain timely processing and security posture.
+- Reference: [Salesforce — What are approvals?](https://help.salesforce.com/s/articleView?id=platform.what_are_approvals.htm&type=5)

@@ -10,6 +10,6 @@ Stakeholder feedback highlighted the need to gate new workspaces until an admini
 We introduced a Prisma/Postgres data model that records users, approval requests, and approval tokens. Registrations create pending users, approval requests, and paired approve/deny tokens whose URLs are emailed to administrators. Approving activates the account and informs the requester; denying marks it rejected and sends a denial email. NextAuth now blocks sign-in until a user is active.
 
 ## Consequences
-- Administrators must maintain `APPROVAL_ADMIN_EMAILS` and SMTP credentials in the environment.
+- Administrators manage approver recipients via the `ApprovalRecipient` table (or by setting `APPROVAL_ADMIN_EMAILS`) alongside SMTP credentials in the environment.
 - The approval email contains fallback logging when SMTP delivery fails, providing manual URLs.
 - Pending users will see “Account pending approval” if they attempt to sign in prematurely.
