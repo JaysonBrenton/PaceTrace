@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { LoginForm } from "./sign-in-form";
 
@@ -35,7 +36,16 @@ export default function LoginPage() {
                 <p className="text-base text-muted-foreground">Access your PaceTrace data.</p>
               </div>
 
-              <LoginForm />
+              <Suspense
+                fallback={
+                  <div className="space-y-4" aria-busy="true">
+                    <div className="h-12 w-full animate-pulse rounded-full bg-muted/40" />
+                    <div className="h-[260px] w-full animate-pulse rounded-[28px] bg-muted/30" />
+                  </div>
+                }
+              >
+                <LoginForm />
+              </Suspense>
 
               <div className="rounded-3xl border border-border/60 bg-muted/20 p-4 text-left text-sm text-muted-foreground">
                 <p className="font-semibold text-foreground">Demo environment</p>

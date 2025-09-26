@@ -1,3 +1,5 @@
+> **Historical note:** the `web/` workspace described below has been retired in favour of a single root runtime. The guidance remains for future Storybook reinstatement.
+
 Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (Desktop)” spec and wire Storybook + Chromatic. Do not paste secrets or credentials. Use small, reviewable diffs and keep code modular. No hardcoded hex colours in components—use CSS variables (design tokens).
 
 # Context
@@ -26,6 +28,8 @@ Act as a senior front-end engineer. Implement the “PaceTrace — Auth Mid-fi (
 | Stories | — | `web/src/stories/auth/**` | Chromatic snapshots enforce visual parity. |
 
 The quick-reference tables below replace the scattered reminders that previously repeated these paths in each section.
+
+> Legacy `web/` paths are preserved for context. When Storybook returns, host it at the repo root and keep Prisma + APIs in the production app.
 
 # Goals (do all)
 1) **Design tokens & Tailwind wiring**

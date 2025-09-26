@@ -1,0 +1,16 @@
+# Reference systemd user unit for PaceTrace. Secrets must remain in environment files.
+[Unit]
+Description=PaceTrace Next.js runtime
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jayson/Development/PaceTrace
+Environment=NODE_ENV=production
+ExecStartPre=/usr/bin/env bash -lc 'cd /home/jayson/Development/PaceTrace && test -f prisma/schema.prisma && npx prisma migrate deploy --schema prisma/schema.prisma || echo "[pacetrace] prisma schema missing, skipping migrate"'
+ExecStart=/usr/bin/env npm run dev -- --hostname 0.0.0.0 --port 3001
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

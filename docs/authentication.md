@@ -1,35 +1,33 @@
 # Authentication UI Contract
 
-PaceTrace ships two authentication implementations that stay in lockstep:
+PaceTrace now ships a single production implementation while keeping the wireframes and reference stories in documentation for future Storybook reintroduction:
 
 - **Production** – `src/app/login` (and related components under `src/app/(auth)` when introduced). This is the systemd-served experience at `/login`.
-- **Reference workspace** – `web/src/app/(auth)` and its Storybook stories. This workspace provides the mid-fi spec, Chromatic baselines, and design token source of truth.
+- **Reference spec** – `docs/wireframes/auth` and the archived Storybook notes in `PaceTrace — Auth Wireframes → Mid-fi + Storybook Chromatic.md` capture the approved states.
 
 ## Quick reference
 
 | Requirement | Source of truth | How to verify |
 | --- | --- | --- |
-| Token palette must drive all colors. | `web/src/styles/tokens.css`, imported by both workspaces. | Run Storybook (`npm run storybook` in `web/`) and inspect **Theme/Reference → Tokens**; root app consumes tokens via `src/app/globals.css`. |
-| Auth components stay synced between workspaces. | Components live in `web/src/components/auth/` and are mirrored in `src/app/login` (or future `src/app/(auth)` modules) as they graduate to production. | Storybook stories under `Auth/*` exercise each state; Chromatic diffs flag mismatches. |
-| UI states (default, loading, error, provider, success) remain visually reviewed. | `web/src/stories/auth/**/*.stories.tsx`. | Chromatic status must be linked in the PR template and approved by `@pacetrace-design` and `@pacetrace-auth`. |
+| Token palette must drive all colors. | `src/styles/tokens.css`, imported by `src/app/globals.css`. | Inspect the token definitions and ensure components consume Tailwind semantic utilities or `var(--color-*)` references. |
+| Auth components stay in sync with approved flows. | `src/components/auth/*` and `src/app/(auth)` routes. | Compare against `docs/wireframes/auth` screens and the mid-fi spec PDF. |
+| UI states (default, loading, error, provider, success) remain visually reviewed. | Documented states in `PaceTrace — Auth Wireframes → Mid-fi + Storybook Chromatic.md`. | Manual QA or future Storybook stories must cover each state before release. |
 | Copy and footer links remain canonical. | `docs/wireframes/auth/README.md`. | Verify page content against the wireframe before promoting updates. |
 
 ## Tokens
 
-- The palette lives in `web/src/styles/tokens.css` and is consumed through Tailwind utility classes or CSS variables (`var(--color-*)`).
+- The palette lives in `src/styles/tokens.css` and is consumed through Tailwind utility classes or CSS variables (`var(--color-*)`).
 - Root-level global styles (`src/app/globals.css`) re-export these variables so production pages stay consistent.
 - Component code must reference tokens (raw hex values are linted against) to preserve consistency across login, register, and password reset flows.
 
 ## Theme reference
 
-- Storybook ships with **Theme/Reference → Tokens**, a live swatch catalog that renders each token alongside copy describing its intent.
-- Visual or accessibility updates to the palette should be demonstrated in this story to provide reviewers immediate context.
+- When Storybook returns, reintroduce a **Theme/Reference → Tokens** story that renders each token alongside descriptive copy to give reviewers immediate context.
 
 ## Auth story surfaces
 
-- Auth flows are captured as dedicated stories under `Auth/` (Login, Register, Forgot) with state coverage for default, loading, error, provider in progress, and success.
-- These stories are the visual contract for Chromatic. Any UI adjustment must update the appropriate story and pass the Chromatic check before merge.
-- Chromatic is configured to block pull requests on unexpected layout or visibility diffs. Approvals require both design and auth-owner sign-off per CODEOWNERS.
+- Auth flows should be documented with stories under `Auth/` (Login, Register, Forgot) when Storybook is reintroduced. Each must cover default, loading, error, provider in progress, and success states.
+- Chromatic (or an equivalent visual regression suite) must gate merges once Storybook returns. Until then, reference the wireframes and capture manual QA evidence in review notes.
 
 ## Account approvals
 
