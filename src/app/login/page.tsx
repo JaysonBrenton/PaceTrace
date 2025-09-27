@@ -47,17 +47,6 @@ export default function LoginPage() {
                 <LoginForm />
               </Suspense>
 
-              <div className="rounded-3xl border border-border/60 bg-muted/20 p-4 text-left text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground">Demo environment</p>
-                <p className="mt-1">
-                  Use <span className="font-medium text-foreground">driver@pacetrace.app</span> with the password
-                  <span className="font-medium text-foreground"> pitlane</span> while running locally. Override these with
-                  <code className="mx-1 rounded bg-muted px-2 py-0.5 text-xs font-semibold text-foreground">AUTH_DEMO_EMAIL</code>
-                  and
-                  <code className="mx-1 rounded bg-muted px-2 py-0.5 text-xs font-semibold text-foreground">AUTH_DEMO_PASSWORD</code>
-                  in your environment to test different credentials.
-                </p>
-              </div>
             </div>
           </div>
 
