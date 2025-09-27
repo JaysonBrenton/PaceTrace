@@ -107,9 +107,8 @@ export function LoginForm({ isLoading, errorMessage, success }: LoginFormProps) 
         disabled={disableForm}
         error={error}
       />
-      <div className="flex justify-between text-sm text-muted">
-        <span className="uppercase tracking-[0.22em]">Lap ready</span>
-        <a className="text-accent" href="/forgot-password">
+      <div className="flex justify-end text-sm">
+        <a className="text-accent transition hover:text-accent-muted" href="/forgot-password">
           Forgot password?
         </a>
       </div>

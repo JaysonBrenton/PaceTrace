@@ -105,14 +105,9 @@ export function LoginForm() {
         </div>
 
         <div className="grid gap-2 text-left">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-muted-foreground" htmlFor="password">
-              Password
-            </label>
-            <Link className="text-sm font-semibold text-accent transition hover:text-accent-muted" href="/forgot-password">
-              Forgot password?
-            </Link>
-          </div>
+          <label className="text-sm font-medium text-muted-foreground" htmlFor="password">
+            Password
+          </label>
           <input
             id="password"
             name="password"
@@ -132,8 +127,10 @@ export function LoginForm() {
           ) : null}
         </div>
 
-        <div className="flex justify-end text-sm">
-          <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Lap ready</span>
+        <div className="flex justify-end">
+          <Link className="text-sm font-semibold text-accent transition hover:text-accent-muted" href="/forgot-password">
+            Forgot password?
+          </Link>
         </div>
 
         <button
