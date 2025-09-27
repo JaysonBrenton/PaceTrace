@@ -53,10 +53,10 @@ export default function TimelinePage() {
           {events.map((event) => (
             <li key={event.id} className="rounded-2xl border border-border/60 bg-background/80 p-5 shadow-card">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground/80">
+                <span className="text-xs font-semibold uppercase tracking-caps text-muted-foreground/80">
                   {event.label}
                 </span>
-                <span className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.28em] ${severityStyles[event.severity]}`}>
+                <span className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-caps ${severityStyles[event.severity]}`}>
                   {event.severity}
                 </span>
               </div>

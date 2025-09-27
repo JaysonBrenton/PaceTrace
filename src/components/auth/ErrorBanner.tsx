@@ -6,7 +6,7 @@ export function ErrorBanner({ message }: ErrorBannerProps) {
   return (
     <div
       role="alert"
-      className="rounded-lg border border-danger/30 bg-[color:color-mix(in_srgb,var(--color-danger)_15%,transparent)] px-4 py-3 text-sm text-danger"
+      className="rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger"
     >
       {message}
     </div>

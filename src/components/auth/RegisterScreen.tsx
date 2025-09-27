@@ -32,7 +32,7 @@ export function RegisterScreen({ isLoading, errorMessage, provider, success }: R
           <form className="space-y-6" aria-label="Create account form">
             {errorMessage && !success ? <ErrorBanner message={errorMessage} /> : null}
             {success ? (
-              <p role="status" className="rounded-lg border border-accent/30 bg-[color:color-mix(in_srgb,var(--color-accent)_12%,transparent)] px-4 py-3 text-sm text-accent">
+              <p role="status" className="rounded-lg border border-accent/40 bg-accent/15 px-4 py-3 text-sm text-accent">
                 Account created. Welcome to PaceTrace!
               </p>
             ) : null}

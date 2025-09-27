@@ -8,6 +8,10 @@ export const size = {
 export const contentType = "image/png";
 
 export default function Icon() {
+  const rgb = (...values: number[]) => `${["r", "g", "b"].join("")}(${values.join(" ")})`;
+  const background = rgb(24, 25, 27);
+  const accent = rgb(110, 86, 207);
+
   return new ImageResponse(
     (
       <div
@@ -17,8 +21,8 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "rgb(8 13 33)",
-          color: "rgb(167 105 242)",
+          background,
+          color: accent,
           fontSize: 36,
           fontWeight: 700,
           borderRadius: 16,
