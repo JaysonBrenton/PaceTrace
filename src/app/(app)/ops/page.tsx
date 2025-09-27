@@ -59,7 +59,7 @@ export default function OpsPage() {
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">{check.title}</h2>
                 <span
-                  className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] ${statusStyles[check.status]}`}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-caps ${statusStyles[check.status]}`}
                 >
                   {check.status}
                 </span>

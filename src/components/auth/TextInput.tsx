@@ -14,7 +14,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     return (
       <div className="space-y-2">
         <label
-          className="block text-[13px] font-medium uppercase tracking-wide text-muted"
+          className="block text-xs font-medium uppercase tracking-wide text-muted"
           htmlFor={inputId}
         >
           {label}

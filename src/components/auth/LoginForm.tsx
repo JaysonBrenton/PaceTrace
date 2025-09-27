@@ -4,8 +4,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-import { PrimaryButton } from "./PrimaryButton";
-import { TextInput } from "./TextInput";
+import { Button, FormField, Input, Muted } from "@/components/ui";
 
 export interface LoginFormProps {
   isLoading?: boolean;
@@ -88,38 +87,49 @@ export function LoginForm({ isLoading, errorMessage, success }: LoginFormProps) 
 
   return (
     <form className="space-y-6" aria-label="Sign in form" onSubmit={handleSubmit}>
-      <TextInput
-        label="Email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        placeholder="driver@pacetrace.app"
-        required
-        disabled={disableForm}
-      />
-      <TextInput
+      <FormField htmlFor="email" label="Email" requiredIndicator="*">
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="driver@pacetrace.app"
+          required
+          disabled={disableForm}
+        />
+      </FormField>
+      <FormField
+        htmlFor="password"
         label="Password"
-        name="password"
-        type="password"
-        autoComplete="current-password"
-        placeholder="Enter your password"
-        required
-        disabled={disableForm}
+        requiredIndicator="*"
         error={error}
-      />
+        errorId="password-error"
+      >
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          placeholder="Enter your password"
+          required
+          disabled={disableForm}
+          invalid={Boolean(error)}
+          aria-describedby={error ? "password-error" : undefined}
+        />
+      </FormField>
       <div className="flex justify-end text-sm">
-        <a className="text-accent transition hover:text-accent-muted" href="/forgot-password">
+        <a className="font-semibold text-accent transition hover:text-accent-strong" href="/forgot-password">
           Forgot password?
         </a>
       </div>
       {success ? (
-        <p role="status" className="text-sm text-accent">
+        <Muted role="status" className="text-sm text-success">
           Success! Redirecting to your workspace…
-        </p>
+        </Muted>
       ) : null}
-      <PrimaryButton isLoading={busy} disabled={disableForm && !busy}>
+      <Button type="submit" isLoading={busy} disabled={disableForm && !busy} className="w-full">
         Sign in
-      </PrimaryButton>
+      </Button>
     </form>
   );
 }

@@ -21,7 +21,7 @@ export default async function AppLayout({
       <header className="border-b border-border/50 bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-3">
-            <span className="inline-flex size-9 items-center justify-center rounded-full border border-border/60 bg-card/60 text-sm font-semibold uppercase tracking-[0.24em] text-accent">
+            <span className="inline-flex size-9 items-center justify-center rounded-full border border-border/60 bg-card/60 text-sm font-semibold uppercase tracking-caps-tight text-accent">
               PT
             </span>
             <div className="space-y-1">
@@ -45,7 +45,7 @@ export default async function AppLayout({
           <SignOutButton email={session.user.email ?? ""} />
         </div>
       </header>
-      <main className="mx-auto flex min-h-[calc(100vh-4.5rem)] w-full max-w-6xl flex-col gap-8 px-6 py-10">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-10">
         {children}
       </main>
     </div>

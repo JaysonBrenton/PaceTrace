@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { Page, PageHeader, Card, Muted } from "@/components/ui";
+
 import { LoginForm } from "./sign-in-form";
 
 export const metadata: Metadata = {
@@ -11,67 +13,48 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-screen flex-col bg-background text-foreground">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsla(var(--color-accent)/0.2),transparent_60%)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-[-10%] h-[420px] bg-[radial-gradient(circle_at_top_right,hsla(var(--color-accent-2)/0.25),transparent_65%)]"
-      />
-
-      <header className="relative z-10 mx-auto w-full max-w-4xl px-4 pt-12 text-center sm:px-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-          PaceTrace — the one-stop lap logic shop.
-        </p>
-      </header>
-
-      <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-16 pt-8 sm:px-6">
-        <section className="w-full max-w-xl">
-          <div className="overflow-hidden rounded-[32px] border border-border/70 bg-card/95 shadow-card backdrop-blur-sm">
-            <div className="space-y-10 p-10 sm:p-12">
-              <div className="space-y-3 text-center">
-                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Sign in</h1>
-                <p className="text-base text-muted-foreground">Access your PaceTrace data.</p>
-              </div>
-
-              <Suspense
-                fallback={
-                  <div className="space-y-4" aria-busy="true">
-                    <div className="h-12 w-full animate-pulse rounded-full bg-muted/40" />
-                    <div className="h-[260px] w-full animate-pulse rounded-[28px] bg-muted/30" />
-                  </div>
-                }
-              >
-                <LoginForm />
-              </Suspense>
-
-            </div>
-          </div>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
+    <Page>
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-xl space-y-6">
+          <PageHeader
+            eyebrow="PaceTrace — the one-stop lap logic shop."
+            title="Sign in"
+            description="Access your PaceTrace data."
+            className="space-y-4 text-center"
+          />
+          <Card className="space-y-8 p-10 sm:p-12">
+            <Suspense
+              fallback={
+                <div className="space-y-4" aria-busy="true">
+                  <div className="h-12 w-full rounded-lg bg-fg-subtle/20" />
+                  <div className="h-40 w-full rounded-2xl bg-fg-subtle/10" />
+                </div>
+              }
+            >
+              <LoginForm />
+            </Suspense>
+          </Card>
+          <Muted className="text-center">
             Need an account?{" "}
-            <Link className="font-semibold text-accent transition hover:text-accent-muted" href="/register">
+            <Link className="font-semibold text-accent transition hover:text-accent-strong" href="/register">
               Create one
             </Link>
-          </p>
-        </section>
+          </Muted>
+        </div>
       </main>
-
-      <footer className="relative z-10 border-t border-border/60 bg-card/70 py-8 backdrop-blur-sm">
-        <p className="mx-auto max-w-4xl px-4 text-center text-xs text-muted-foreground sm:px-6">
+      <footer className="border-t border-border/60 bg-surface/80 py-6">
+        <p className="mx-auto max-w-4xl px-4 text-center text-xs text-fg-muted sm:px-6">
           © PaceTrace •{" "}
-          <Link className="font-medium text-accent transition hover:text-accent-muted" href="/legal/privacy">
+          <Link className="font-medium text-accent transition hover:text-accent-strong" href="/legal/privacy">
             Privacy
           </Link>{" "}
           •{" "}
-          <Link className="font-medium text-accent transition hover:text-accent-muted" href="/legal/terms">
+          <Link className="font-medium text-accent transition hover:text-accent-strong" href="/legal/terms">
             Terms
           </Link>{" "}
-          • <span className="font-semibold text-foreground">See the data. Find the pace.</span>
+          • <span className="font-semibold text-fg">See the data. Find the pace.</span>
         </p>
       </footer>
-    </div>
+    </Page>
   );
 }

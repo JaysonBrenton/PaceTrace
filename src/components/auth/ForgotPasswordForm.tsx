@@ -39,7 +39,7 @@ function ForgotPasswordFormContent({ errorMessage, success }: { errorMessage?: s
       {success ? (
         <p
           role="status"
-          className="rounded-lg border border-accent/30 bg-[color:color-mix(in_srgb,var(--color-accent)_12%,transparent)] px-4 py-3 text-sm text-accent"
+          className="rounded-lg border border-accent/40 bg-accent/15 px-4 py-3 text-sm text-accent"
         >
           If the email exists, a reset link has been sent.
         </p>
