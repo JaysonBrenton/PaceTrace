@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Fragment, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
+import { Button, FormField, Input, Muted } from "@/components/ui";
 import { getEmailTelemetry } from "@/lib/email";
 import { trackUiEvent } from "@/lib/telemetry";
 
@@ -86,62 +87,59 @@ export function LoginForm() {
   };
 
   return (
-    <Fragment>
-      <form className="space-y-6" method="post" data-analytics-event="auth:submit" onSubmit={handleSubmit}>
-        <div className="grid gap-2 text-left">
-          <label className="text-sm font-medium text-muted-foreground" htmlFor="email">
-            Email address
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            disabled={isBusy}
-            className="block w-full rounded-xl border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/70 transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-[hsl(var(--color-bg))] disabled:opacity-70"
-            placeholder="you@teamradio.com"
-          />
-        </div>
+    <form
+      className="space-y-6"
+      method="post"
+      data-analytics-event="auth:submit"
+      onSubmit={handleSubmit}
+    >
+      <FormField htmlFor="email" label="Email address" requiredIndicator="*">
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          disabled={isBusy}
+          placeholder="you@teamradio.com"
+        />
+      </FormField>
 
-        <div className="grid gap-2 text-left">
-          <label className="text-sm font-medium text-muted-foreground" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            disabled={isBusy}
-            aria-invalid={passwordError ? true : undefined}
-            aria-describedby={passwordError ? "password-error" : undefined}
-            className="block w-full rounded-xl border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/70 transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-[hsl(var(--color-bg))] disabled:opacity-70"
-            placeholder="••••••••"
-          />
-          {passwordError ? (
-            <p className="text-sm font-medium text-destructive" id="password-error" role="alert">
-              {passwordError}
-            </p>
-          ) : null}
-        </div>
+      <FormField
+        htmlFor="password"
+        label="Password"
+        requiredIndicator="*"
+        error={passwordError ?? undefined}
+        errorId="password-error"
+      >
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+          disabled={isBusy}
+          invalid={Boolean(passwordError)}
+          aria-describedby={passwordError ? "password-error" : undefined}
+          placeholder="••••••••"
+        />
+      </FormField>
 
-        <div className="flex justify-end">
-          <Link className="text-sm font-semibold text-accent transition hover:text-accent-muted" href="/forgot-password">
-            Forgot password?
-          </Link>
-        </div>
+      <div className="flex justify-end text-sm">
+        <Link className="font-semibold text-accent transition hover:text-accent-strong" href="/forgot-password">
+          Forgot password?
+        </Link>
+      </div>
 
-        <button
-          type="submit"
-          className="inline-flex w-full items-center justify-center rounded-full bg-[hsl(var(--color-accent))] px-6 py-3 text-sm font-semibold text-[hsl(var(--color-card))] transition hover:bg-[hsl(var(--color-accent-muted))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsla(var(--color-accent)/0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))] disabled:cursor-not-allowed disabled:opacity-80"
-          data-analytics-event="auth:submit:primary"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
-    </Fragment>
+      <Button type="submit" isLoading={isSubmitting} disabled={isSubmitting} className="w-full">
+        {isSubmitting ? "Signing in…" : "Sign in"}
+      </Button>
+
+      {passwordError ? (
+        <Muted role="status" className="text-center text-sm text-danger">
+          Need help? Reset your password or contact support if the issue persists.
+        </Muted>
+      ) : null}
+    </form>
   );
 }

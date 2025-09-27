@@ -3,9 +3,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 
-import { ErrorBanner } from "./ErrorBanner";
-import { PrimaryButton } from "./PrimaryButton";
-import { TextInput } from "./TextInput";
+import { Button, FormField, Input, Muted } from "@/components/ui";
 
 const REGISTER_ERROR_MESSAGES: Record<string, string> = {
   missingFields: "We need all fields to keep your workspace request on track.",
@@ -102,47 +100,71 @@ export function RegisterForm() {
 
   return (
     <form className="space-y-6" aria-label="Create account form" onSubmit={handleSubmit}>
-      {errorMessage && !success ? <ErrorBanner message={errorMessage} /> : null}
+      {errorMessage && !success ? (
+        <div
+          role="alert"
+          className="rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-sm font-medium text-danger"
+        >
+          {errorMessage}
+        </div>
+      ) : null}
       {success ? (
-        <p
+        <div
           role="status"
-          className="rounded-lg border border-accent/30 bg-[color:color-mix(in_srgb,var(--color-accent)_12%,transparent)] px-4 py-3 text-sm text-accent"
+          className="rounded-lg border border-success/40 bg-success/10 px-4 py-3 text-sm font-medium text-success"
         >
           Thanks — your account is pending approval.
-        </p>
+        </div>
       ) : null}
-      <TextInput
-        label="Email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        placeholder="team@pacetrace.app"
-        required
-        disabled={disableFields}
-      />
-      <TextInput
-        label="Display name"
-        name="displayName"
-        autoComplete="name"
-        placeholder="Your team handle"
-        required
-        disabled={disableFields}
-      />
-      <div className="space-y-2">
-        <TextInput
-          label="Password"
+      <FormField htmlFor="email" label="Email" requiredIndicator="*">
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="team@pacetrace.app"
+          required
+          disabled={disableFields}
+        />
+      </FormField>
+      <FormField htmlFor="displayName" label="Display name" requiredIndicator="*">
+        <Input
+          id="displayName"
+          name="displayName"
+          autoComplete="name"
+          placeholder="Your team handle"
+          required
+          disabled={disableFields}
+        />
+      </FormField>
+      <FormField
+        htmlFor="password"
+        label="Password"
+        requiredIndicator="*"
+        description={<span>Use at least 8 characters with a mix of numbers and symbols.</span>}
+        error={success ? undefined : error === "weakPassword" ? REGISTER_ERROR_MESSAGES.weakPassword : undefined}
+        errorId="password-error"
+      >
+        <Input
+          id="password"
           name="password"
           type="password"
           autoComplete="new-password"
           placeholder="Create a password"
           required
           disabled={disableFields}
+          invalid={error === "weakPassword"}
+          aria-describedby={error === "weakPassword" ? "password-error" : undefined}
         />
-        <p className="text-sm text-muted">Use at least 8 characters with a mix of numbers and symbols.</p>
-      </div>
-      <PrimaryButton isLoading={pending} disabled={disableFields && !pending}>
+      </FormField>
+      <Button type="submit" isLoading={pending} disabled={disableFields && !pending} className="w-full">
         Request access
-      </PrimaryButton>
+      </Button>
+      {success ? (
+        <Muted role="status" className="text-center text-sm text-success">
+          We sent you a confirmation email. Sit tight while we review your workspace.
+        </Muted>
+      ) : null}
     </form>
   );
 }
